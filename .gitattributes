@@ -1,4 +1,0 @@
-# Append-only files: union-merge so two developers appending never conflict.
-skills/*/LEARNINGS.md merge=union
-voice-skills/*/LEARNINGS.md merge=union
-metrics/*.jsonl merge=union
