@@ -15,6 +15,9 @@ Rules:
   before commit. Treat warnings as decisions, not noise.
 - All bundled Python is a single file with a PEP 723 `# /// script` header,
   runnable via `uv run` with no environment setup.
+- **Git workflow:** This is a personal repository; when authorized changes are
+  complete and checks pass, commit directly to the main branch and push it —
+  do not create a feature branch or PR unless the user explicitly requests one.
 - Never edit a skill's SKILL.md to record a one-off correction — append a
   dated line to that skill's `LEARNINGS.md` instead. Folding learnings into
   SKILL.md is a deliberate, reviewed step.
