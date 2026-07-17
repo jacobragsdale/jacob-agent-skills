@@ -135,6 +135,17 @@ Read LEARNINGS.md before executing.
         self.assertEqual(errors, [])
         self.assertFalse(any("not-real" in warning for warning in warnings), warnings)
 
+    def test_qualified_external_paths_are_not_treated_as_references(self) -> None:
+        body = (
+            "Run `./scripts/local-wrapper.sh` from the repo root, check "
+            "`host/scripts/status.sh` on the server, and refresh "
+            "`~/home-server/scripts/deploy.sh`.\n\nRead LEARNINGS.md first.\n"
+        )
+        _, warnings = validate_skill.validate(self.write_skill(body=body))
+        self.assertFalse(
+            any("does not exist" in warning for warning in warnings), warnings
+        )
+
     def test_real_missing_reference_warns(self) -> None:
         body = (
             "Read references/missing.md before running.\n\nRead LEARNINGS.md first.\n"

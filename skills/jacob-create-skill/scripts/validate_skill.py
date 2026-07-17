@@ -19,7 +19,10 @@ from pathlib import Path
 import yaml
 
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-LOCAL_REF_RE = re.compile(r"\b((?:scripts|references|assets)/[A-Za-z0-9_.\-/]+)")
+# Lookbehind excludes qualified paths (~/repo/scripts/x, host/scripts/x,
+# ./scripts/x) — only bare scripts/, references/, assets/ paths are treated
+# as references to files bundled with the skill.
+LOCAL_REF_RE = re.compile(r"(?<![\w/~.])((?:scripts|references|assets)/[A-Za-z0-9_.\-/]+)")
 
 CORE_FIELDS = {
     "name",
