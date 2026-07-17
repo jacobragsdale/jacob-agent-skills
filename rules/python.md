@@ -84,4 +84,4 @@ if __name__ == "__main__":
   behavior sentences (`test_expired_token_is_rejected`). Prefer real
   objects and hand-written fakes of boundaries you own over
   `mock.patch` — if code needs patching to test, restructure it per the
-  rules above instead. Full standard: the `python-testing` skill.
+  rules above instead. Full standard: the `python-standards` skill.
