@@ -248,6 +248,15 @@ Read LEARNINGS.md before executing.
         _, warnings = validate_skill.validate(skill_dir)
         self.assertTrue(any("table of contents" in warning for warning in warnings))
 
+    def test_all_shipped_skills_pass_validation_clean(self) -> None:
+        skills_dir = REPO_ROOT / "skills"
+        for skill_dir in sorted(
+            d for d in skills_dir.iterdir() if (d / "SKILL.md").is_file()
+        ):
+            errors, warnings = validate_skill.validate(skill_dir)
+            self.assertEqual(errors, [], f"{skill_dir.name}: {errors}")
+            self.assertEqual(warnings, [], f"{skill_dir.name}: {warnings}")
+
     def test_reference_chain_warns(self) -> None:
         skill_dir = self.write_skill()
         references = skill_dir / "references"

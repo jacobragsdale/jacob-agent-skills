@@ -11,8 +11,10 @@ writes internal files into its skills dir, which breaks a dir-level symlink):
     ~/.agents/skills/<name>  -> <repo>/skills/<name>   (Cursor)
     ~/.claude/skills/<name>  -> <repo>/skills/<name>   (Claude Code)
 
-Edits in the repo take effect everywhere immediately. Re-run after adding a
-skill; use --uninstall to remove only symlinks that point into this repo.
+Edits in the repo take effect immediately in Claude Code; Cursor discovers
+skills at startup, so reload it after adding or editing a skill. Re-run after
+adding, renaming, or removing a skill (stale links into this repo are pruned
+automatically); use --uninstall to remove every symlink pointing into this repo.
 """
 
 import argparse
@@ -27,7 +29,25 @@ def repo_skills() -> list[Path]:
     return sorted(d for d in SKILLS.iterdir() if (d / "SKILL.md").is_file())
 
 
+def prune(dry_run: bool) -> None:
+    """Remove links that point into this repo but whose skill no longer exists."""
+    for root in TARGET_ROOTS:
+        if not root.is_dir():
+            continue
+        for link in sorted(root.iterdir()):
+            if not link.is_symlink():
+                continue
+            target = link.resolve()
+            if SKILLS in target.parents and not (target / "SKILL.md").is_file():
+                if dry_run:
+                    print(f"would prune   {link} (target gone)")
+                else:
+                    link.unlink()
+                    print(f"pruned    {link}")
+
+
 def install(dry_run: bool, force: bool) -> int:
+    prune(dry_run)
     problems = 0
     for skill in repo_skills():
         for root in TARGET_ROOTS:
