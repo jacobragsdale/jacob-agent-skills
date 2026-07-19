@@ -44,10 +44,11 @@ uv run install.py --dry-run  # preview
 uv run install.py --uninstall
 ```
 
-Per-skill symlinks mean edits in this repo take effect everywhere
-immediately. `install.py` only needs re-running when a skill is added,
-renamed, or removed — agents working in this repo do that automatically
-(see AGENTS.md).
+Per-skill symlinks mean edits in this repo take effect immediately in
+Claude Code (it live-watches its skills directory); Cursor discovers skills
+at startup, so reload it after adding a skill or changing a description.
+`install.py` only needs re-running when a skill is added, renamed, or
+removed — agents working in this repo do that automatically (see AGENTS.md).
 
 Voice-assistant skills for jarvis live with the assistant
 (`~/Development/jarvis/skills/`), not here — they follow different
@@ -66,6 +67,10 @@ uv run skills/jacob-create-skill/scripts/validate_skill.py skills/my-skill
 ## Conventions
 
 - Every skill passes `validate_skill.py` before commit.
+- Descriptions are directive triggers: the first sentence (~80 chars — all
+  Cursor shows the model) names the capability and top keywords, followed by
+  "Use when …", an "even if …" clause, and an anti-trigger for
+  high-frequency domains. Whole description under 250 chars when possible.
 - Every skill has a `LEARNINGS.md`: agents append dated corrections after
   use; recurring lessons get folded into SKILL.md deliberately.
 - Bundled Python (if any) is single-file with PEP 723 inline deps, run via

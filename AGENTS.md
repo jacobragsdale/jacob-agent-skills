@@ -10,14 +10,21 @@ Rules:
 
 - **Added, renamed, or removed a skill?** Run `uv run install.py` before
   finishing so the symlinks in `~/.agents/skills` and `~/.claude/skills`
-  stay current. Editing an existing skill needs nothing — symlinks pick it
-  up immediately.
+  stay current (it also prunes links for removed skills). Editing an
+  existing skill needs nothing for Claude Code — symlinks pick it up
+  immediately; Cursor discovers skills at startup, so mention that a reload
+  is needed when you change frontmatter.
 - **Creating or changing a skill?** Follow `skills/jacob-create-skill/SKILL.md`
   — it is the house process (clarify → scaffold → draft → validate → trigger
   test → learnings loop).
 - Every skill must pass
   `uv run skills/jacob-create-skill/scripts/validate_skill.py skills/<name>`
   before commit. Treat warnings as decisions, not noise.
+- Run the test suite (`uv run tests/<file>.py` for each file in `tests/`)
+  before committing changes to skills or tooling.
+- Skill descriptions are directive triggers: capability and top keywords in
+  the first sentence (~80 chars), then "Use when …" with an "even if …"
+  clause. The validator enforces the shape.
 - Skills are model-invocable by default (no `disable-model-invocation`
   field). Add `disable-model-invocation: true` only for skills that must
   never fire on their own.

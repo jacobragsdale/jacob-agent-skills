@@ -73,6 +73,9 @@ if __name__ == "__main__":
 - uv only: `uv add`, `uv run`, `uv sync`. Never `pip install`; never write
   a setup shell script — every dependency and build fix lands in
   `pyproject.toml`.
+- Setting up or standardizing a repo's tooling (pyproject config, pre-commit,
+  coverage, .env): use the `python-standards` skill and copy its templates
+  instead of improvising config.
 - Python 3.11. One `pyproject.toml` per repo holds dependencies and all
   tool config (ruff, basedpyright, pytest).
 - Standalone scripts are single files with a PEP 723 `# /// script` header,
