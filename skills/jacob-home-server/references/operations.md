@@ -33,9 +33,15 @@ service facts in the home-server repo rather than copying them here.
 - Read its complete compose file, SOPS key names, mounts, networks, and the
   matching `docs/services.md` row. Search for cross-stack references before
   renaming a service, container, port, secret, hostname, or path.
+- Preserve the repository's reproducibility contract: external images use a
+  readable tag plus an immutable digest, and Caddy bases/modules are pinned.
+  Inspect release notes and the new digest, then make upgrades as reviewed Git
+  changes; maintenance does not refresh application images.
 - Validate Compose through `sops exec-env`; never render a decrypted config into
-  the response. Deploy only that stack, then verify container state, logs, and
-  the endpoint through the same path its client uses.
+  the response. Run the offline gate, commit and push the clean artifact,
+  deploy only that stack when no host/shared change requires more, then verify
+  container state, logs, and the endpoint through the same path its client
+  uses.
 - For Caddy changes, read `docs/public-ingress.md` and the complete Caddyfile.
   `scripts/deploy.sh caddy` performs the reload and CrowdSec sync; still verify
   the affected route and run
@@ -43,21 +49,28 @@ service facts in the home-server repo rather than copying them here.
 
 ## Add a stack or service
 
-1. Follow the current conventions in neighboring stacks: top-level `name:`,
-   explicit `container_name:`, restart policy, healthcheck, security options,
-   network, and `${VAR:?run via sops exec-env}` for required secrets.
-2. Put mutable data outside `~/home-server`; choose ownership deliberately.
-   Decide whether it belongs in `host/scripts/backup.sh` and whether restore
-   needs to recreate excluded/cache directories.
-3. Default UI ports to the Tailscale IP. For internal HTTPS or public ingress,
+1. Choose a lifecycle boundary from dependencies, secrets, restart coupling,
+   and failure domain. Reuse an existing stack when those are shared; do not
+   merge unrelated projects merely to reduce the Compose-file count.
+2. Follow current neighboring conventions: top-level `name:`, explicit
+   `container_name:`, pinned `tag@sha256:digest` image, restart policy,
+   healthcheck, security options, network, and
+   `${VAR:?run via sops exec-env}` for required secrets.
+3. Put mutable data outside `~/home-server`. Add every persistent bind source
+   to `host/data-layout.tsv` with deliberate owner, group, mode, and
+   `backup=yes|no`; explain the consequence in `docs/state-and-backups.md`.
+   Add an application-consistent export when backing up live files is unsafe.
+4. Default UI ports to the Tailscale IP. For internal HTTPS or public ingress,
    update every layer documented in `docs/public-ingress.md` and the router/DNS
    declarations. Add authentication and a CrowdSec login scenario when the
    exposure model requires them.
-4. Update `docs/services.md` and `docs/credentials.md` when applicable. The
+5. Update `docs/services.md` and `docs/credentials.md` when applicable. The
    healthcheck derives container presence from `container_name:`; add an HTTP or
    TCP probe only when it provides a stable, meaningful signal.
-5. Validate, deploy the new stack explicitly, exercise the endpoint, run the
-   relevant healthcheck, and confirm drift is clean.
+6. Validate, commit, and push. Use a full deploy when the new service added a
+   data-layout or other `host/` change so host convergence creates bind sources
+   before Compose; otherwise deploy the new stack explicitly. Exercise the
+   endpoint, run verification, and confirm drift is clean.
 
 ## Remove a stack or service
 
@@ -70,20 +83,29 @@ service facts in the home-server repo rather than copying them here.
    project with `docker compose down` through its SOPS environment. Do not add
    `--volumes` unless Jacob explicitly approved volume deletion.
 3. Remove repo configuration and all now-stale references. Preserve bind data
-   and named volumes by default. Deploy affected shared stacks and confirm no
-   orphaned route, container, or drift remains.
+   and named volumes by default. If Jacob wants the retired state recoverable,
+   keep its `backup=yes` data-layout row or create a validated export under an
+   explicitly backed-up path and document it; merely leaving data on the live
+   disk is not preservation after a host loss. Validate, commit/push, deploy
+   affected shared or host scope, and confirm no orphaned route, container, or
+   drift remains.
 
 ## Change host state
 
 - Declare packages in `host/packages.txt`, host configuration in `host/etc/`,
   units in `host/systemd/`, and automation in `host/scripts/`. Do not use an
   ad-hoc `pacman -S` as the final state.
-- Deploy to sync the tree, run `host/install.sh` remotely, then verify the
-  affected unit/config and `scripts/drift.sh`. Package removal is a separate
-  human decision: inspect reverse dependencies before `pacman -Rns`.
+- After checks and a clean commit/push, run the full no-argument deploy. It
+  invokes `host/install.sh`, creates missing data-layout roots, converges the
+  repo-owned systemd namespace in both directions, and preserves the current
+  activation state. Do not run the installer a second time. Package removal is
+  a separate human decision: inspect reverse dependencies before `pacman -Rns`.
 - Routine maintenance deliberately excludes Docker runtime upgrades. Read
   `host/scripts/maintenance.sh` before intentionally updating Docker,
   containerd, or runc because that path restarts the runtime and runs a canary.
+- Docker's desired default logger is `local`. A changed daemon config restarts
+  Docker, and a full deploy may recreate legacy containers so the new default
+  takes effect; treat that as a disruptive migration and verify every project.
 
 ## Change secrets or credentials
 
@@ -109,6 +131,12 @@ service facts in the home-server repo rather than copying them here.
 
 ## Service-specific guardrails
 
+- After a reboot or a Tailscale-bound port failure, inspect
+  `jacob-home-net-reconcile.service` and `host/logs/net-reconcile.log` before
+  restarting containers individually. The boot service waits for the declared
+  Tailscale IP and converges every always-on project; there is intentionally no
+  periodic healer. Use `host/scripts/docker-net-heal.sh` only for an evidenced
+  detached Docker network endpoint.
 - Add media through Seerr/Sonarr/Radarr, not Transmission. Stop Transmission
   before editing its server-side `settings.json`; it rewrites that file on
   shutdown. Test linuxserver-container file operations as uid 1000 when

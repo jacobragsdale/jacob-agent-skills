@@ -3,32 +3,68 @@
 Read this file before restoring backups, rebuilding a host, rehearsing a
 rebuild, or destroying/resetting the on-demand Windows VM.
 
+## Contents
+
+- Backup and restore
+- Production rebuild
+- Rebuild rehearsal
+- On-demand Windows VM
+
 ## Backup and restore
 
 - Read `host/scripts/backup.sh`, `host/scripts/restore.sh`, the backup section
-  of `docs/services.md`, and the `bootstrap.sh` header before acting. The code is
-  authoritative for current paths, retention, and prerequisites.
-- Inspect snapshots before restoring. `restore.sh` is intentionally interactive,
-  writes absolute paths under `/`, overwrites existing files, and verifies the
+  of `docs/services.md`, `docs/state-and-backups.md`, and the `bootstrap.sh`
+  header before acting. `host/data-layout.tsv` is authoritative for path,
+  initial ownership/mode, and backup selection.
+- A backup is successful only when required paths exist, the router archive and
+  RomM logical dump validate, restic commits a snapshot, retention completes,
+  and the final log reports zero failures. A prerequisite failure skips the
+  snapshot, and retention must never prune after a failed backup.
+- Retention keeps the three newest snapshots in addition to the longer
+  daily/weekly/monthly buckets. Before a destructive state migration or global
+  rollout, confirm a recent fully successful recovery point; do not create
+  repeated off-cycle snapshots for ordinary low-risk config edits.
+- Inspect snapshots before restoring. `restore.sh` refuses to run while managed
+  production containers are active, is intentionally interactive, writes
+  absolute paths under `/`, overwrites existing files, and verifies the
   restored data. Restoring configuration is a live destructive action; obtain
   explicit approval for the selected snapshot and target.
 - Media and the Windows disk are intentionally outside the restic backup. Do not
   claim they are recoverable from B2. Confirm critical new service state was
-  added to the backup path list before calling a deployment complete.
-- A restore includes `/home/jacob/.ssh` and can replace `authorized_keys`. Use
-  Jacob's production key for access and plan the connection around that change.
+  added to `host/data-layout.tsv` before calling a deployment complete.
+- Restore merges the fresh host's current SSH authorization key with the
+  snapshot, then imports a RomM logical dump while only MariaDB is running and
+  stops it again before the full deployment.
+- For a non-destructive recovery drill, restore selected artifacts with
+  `restic restore --target <mktemp-dir> --verify`; do not run `restore.sh`
+  against the live host. Validate the router tarball and gzip, and import the
+  RomM dump into a disposable `--network none` MariaDB using the exact image
+  declared by Compose. Initialize both root and `romm-user`: dumped views use
+  that definer and an unrealistic root-only fixture will fail. Remove the exact
+  test container and temporary tree afterward.
+- Repeated restore/check/prune drills can exhaust Backblaze download or Class B
+  transaction caps. On a 403 cap response, stop retrying, confirm whether the
+  snapshot was already committed from `backup.log`, leave the timer armed, and
+  report the external cap/reset follow-up instead of hammering B2.
 
 ## Production rebuild
 
-Follow the current `bootstrap.sh` header, not a memorized sequence. The durable
-shape is: validate the destructive archinstall disk config → install Arch →
-restore the age key → sync the Mac repo → run `bootstrap.sh` → restore the chosen
-restic snapshot → deploy → complete router/Tailscale/cloud-console steps →
-verify from both LAN and tailnet/public client paths.
+Follow `docs/rebuild.md` and the current `bootstrap.sh` header, not a memorized
+sequence. The durable shape is: validate the destructive archinstall disk
+config → install Arch → restore the age key → `deploy.sh --sync-only` → run
+`bootstrap.sh` with automation cold → reclaim and approve the Tailscale
+identity/IP → restore the chosen restic snapshot → full deploy →
+`EXPECT_AUTOMATION=cold scripts/verify.sh` plus drift →
+`host/install.sh --activate` → normal verify/drift and real client tests → a
+fresh successful backup.
 
 Reconfirm the hostname, fixed Tailscale identity/IP, LAN reservation, disk
 layout, age key, restic password, and SSH access before starting. Credentials
 remain interactive or in a local uncommitted file.
+
+Do not deploy the stacks until the fixed Tailscale address exists; several
+ports bind directly to it. After reboot, require the boot reconciliation unit
+to succeed before treating container restart-policy state as healthy.
 
 ## Rebuild rehearsal
 

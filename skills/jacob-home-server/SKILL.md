@@ -16,7 +16,8 @@ GitHub; a verified commit and push are the configuration backup.
    file. Then work from the Mac repository. Check the worktree with
    `git status --short` before editing and preserve unrelated changes.
 2. Read `README.md`, `docs/services.md`, and the files that own the requested
-   behavior. Do not trust a service list copied into this skill: this repo
+   behavior. Read `docs/state-and-backups.md` for persistence or recovery
+   changes. Do not trust a service list copied into this skill: this repo
    changes quickly.
 3. For current state, run `./scripts/drift.sh`. For host health, run
    `ssh 100.103.224.99 'bash ~/home-server/host/scripts/status.sh --summary'`.
@@ -37,14 +38,17 @@ VM operation.
 - Never edit compose files, scripts, units, dotfiles, or declared host config
   on the server. Edit the Mac repo and apply it with the repo scripts; deploy
   uses `rsync --delete`, so remote edits disappear.
-- Every deploy syncs the entire Mac working tree. A stack argument limits which
-  Compose projects are applied, not which files rsync copies. Do not deploy an
-  unrelated, unready dirty change along with the requested work.
+- Every deploy syncs the entire clean, committed Mac tree. A stack argument
+  limits which Compose projects are applied, not which files rsync copies, and
+  `deploy.sh` refuses staged, unstaged, or untracked changes. Review, commit,
+  and push the complete intended artifact before deploying it unless Jacob
+  explicitly asked to stop before publication; in that case, do not deploy.
 - Never create a plaintext `.env`, inline a secret, write decrypted data to
   disk, or include a decrypted value in output. Edit `*.sops.env` with `sops`;
   inspect key names only.
 - Never put application data under `~/home-server`. Bind it from a separate
-  server path recorded in `docs/services.md`.
+  server path declared in `host/data-layout.tsv`; explain its recovery class in
+  `docs/state-and-backups.md` and service ownership in `docs/services.md`.
 - Never delete a volume, bind-mount directory, backup snapshot, media, VM disk,
   or drift-reported data without Jacob's explicit approval for that deletion.
   Removing configuration does not imply deleting its data.
@@ -60,22 +64,27 @@ VM operation.
 ## Apply changes
 
 1. Establish the failure or desired state with the narrowest read-only check.
-2. Edit every owning artifact, including service inventory, backup coverage,
-   ingress, health probes, credentials, and router/DNS declarations when they
-   are actually affected.
-3. Validate locally where possible. For a stack with secrets, run from its
-   directory:
-   `sops exec-env secrets.sops.env 'docker compose config --quiet'`.
-4. Deploy the narrowest scope: `./scripts/deploy.sh <stack>`. Use a full deploy
-   only when multiple stacks or global behavior require it; remember that both
-   forms sync the whole tree. For `host/` changes, deploy first, then run
-   `ssh 100.103.224.99 'bash ~/home-server/host/install.sh'`.
-5. Verify the changed container/unit, its logs, and the user-visible endpoint.
-   Run the broader healthcheck or drift check when the change can affect shared
-   infrastructure. A successful command is not sufficient proof by itself.
-6. Review the diff for secrets and accidental scope. When the requested change
-   is verified, commit and push the home-server repo unless Jacob asked to stop
-   before publication.
+2. Edit every owning artifact, including service inventory, data-layout and
+   recovery policy, ingress, health probes, credentials, and router/DNS
+   declarations when they are actually affected.
+3. Run `./scripts/check.sh`. For a stack with secrets, also render Compose from
+   its directory with
+   `sops exec-env secrets.sops.env 'docker compose config --quiet'` when a
+   focused model check helps diagnose the change.
+4. Review the diff for secrets and accidental scope, then commit and push the
+   home-server repo. If Jacob asked to stop before publication, stop here and
+   do not deploy. Deployment accepts only a clean committed artifact; if live
+   verification exposes a problem, fix it in a new commit and repeat.
+5. Deploy the narrowest valid scope with `./scripts/deploy.sh <stack>`. Use a
+   full no-argument deploy for multi-stack/global behavior or **any `host/`
+   change**, including `host/data-layout.tsv`; the full deploy runs
+   `host/install.sh` automatically. Do not run it again afterward.
+   `host/install.sh --activate` is only the post-restore cold-host transition
+   described in the recovery runbook, never a normal update step.
+6. Verify the changed container/unit, its logs, and the user-visible endpoint.
+   Run `./scripts/verify.sh` and `./scripts/drift.sh` for host, shared
+   infrastructure, persistence, or multi-stack changes. A successful deploy
+   command is not sufficient proof by itself.
 
 ## Completion report
 
