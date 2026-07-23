@@ -1,7 +1,7 @@
 # Merge these sections into the repository's pyproject.toml.
 
 [tool.ruff]
-line-length = 100
+line-length = 200
 target-version = "py311"
 required-version = ">=0.15.22"
 force-exclude = true
@@ -53,11 +53,15 @@ ignore = [
     "ASYNC109",  # Allow deliberate timeout parameters in async APIs.
 ]
 
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false  # Do not preserve comma-forced import line breaks.
+
 [tool.ruff.lint.mccabe]
 max-complexity = 15
 
 [tool.ruff.format]
 docstring-code-format = true
+skip-magic-trailing-comma = true  # Collapse comma-forced multiline constructs when they fit.
 
 [tool.basedpyright]
 pythonVersion = "3.11"

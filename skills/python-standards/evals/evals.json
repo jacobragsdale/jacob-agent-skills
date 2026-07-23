@@ -36,6 +36,12 @@
       "prompt": "Standardize Ruff for a Python 3.11 trading service that uses pandas, FastAPI, and asyncio, while keeping timeout parameters valid in its public async APIs.",
       "expected_output": "The agent copies the standard Ruff asset; enables PERF, FAST, stable ASYNC rules except ASYNC109, and the full stable PD pandas-vet family; does not enable S; and keeps unsafe fixes disabled.",
       "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Configure Ruff to allow 200-character lines and collapse calls that are multiline only because of a trailing comma.",
+      "expected_output": "The agent copies the standard Ruff asset with line-length set to 200, format.skip-magic-trailing-comma enabled, and isort.split-on-trailing-comma disabled, so unnecessary magic trailing commas and their forced line breaks are removed when the construct fits within 200 characters; it does not add the formatter-conflicting COM819 rule.",
+      "files": []
     }
   ]
 }
