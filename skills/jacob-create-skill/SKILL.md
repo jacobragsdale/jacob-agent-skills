@@ -95,9 +95,12 @@ House rules, and why:
   is under 500 lines and 5,000 tokens). Move conditional detail to a directly
   linked reference and state exactly when to read it. Give references over 100
   lines a table of contents.
-- **Only write what moves the agent off its defaults.** A capable agent
-  already knows how to write Python and read docs. Every line should encode
-  something it would otherwise get wrong. Delete the rest.
+- **Apply the default-behavior test to every rule as you draft and revise.**
+  Ask: "Would a capable model in the target harness already behave this way by
+  default, or does it need this guidance to start doing so?" If it already
+  would, delete the rule. Keep only guidance backed by an observed miss, a
+  user- or project-specific choice, a harness conflict, or a fragile operation;
+  state the smallest delta needed to change the behavior.
 - **Imperative voice, one excellent worked example.** "Run X, then check Y"
   beats "the agent should…". Keep one compact input→output example in the body;
   keep behavioral test cases outside it.
