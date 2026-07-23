@@ -70,7 +70,7 @@ to succeed before treating container restart-policy state as healthy.
 
 - Set `REHEARSAL=1` on `bootstrap.sh`, `host/install.sh`, and every deploy or
   drift command pointed at the VM. Also set `SERVER=<vm-alias>`. This prevents a
-  tailnet join, leaves timers disarmed, and scales cloudflare-ddns to zero.
+  tailnet join and leaves timers disarmed.
 - Never arm production timers on a rehearsal box. The backup timer executes
   `restic forget --prune` against the real B2 repository; health and cleanup
   timers can page the phone or delete rehearsal data.

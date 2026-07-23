@@ -161,11 +161,9 @@ each claimed target separately. Read `frontmatter.md` for the current matrix.
 
 ## Maintenance
 
-After use, capture only verified surprises or explicit corrections in
-`LEARNINGS.md`. Fold recurring or user-confirmed lessons into the relevant step,
-then remove the sidecar entry. Preserve the existing name, invocation policy,
-and frontmatter while editing unless the user requested a change. Prune prose on
-every revision because skills accrete.
+Preserve the existing name, invocation policy, and frontmatter while editing
+unless the user requested a change. Prune prose on every revision because
+skills accrete.
 
 ## Primary sources
 

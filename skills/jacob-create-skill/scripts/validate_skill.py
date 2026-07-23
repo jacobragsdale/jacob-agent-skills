@@ -26,7 +26,9 @@ RESERVED_NAME_WORDS = ("anthropic", "claude")
 # Lookbehind excludes qualified paths (~/repo/scripts/x, host/scripts/x,
 # ./scripts/x) — only bare scripts/, references/, assets/ paths are treated
 # as references to files bundled with the skill.
-LOCAL_REF_RE = re.compile(r"(?<![\w/~.])((?:scripts|references|assets)/[A-Za-z0-9_.\-/]+)")
+LOCAL_REF_RE = re.compile(
+    r"(?<![\w/~.])((?:scripts|references|assets)/[A-Za-z0-9_.\-/]+)"
+)
 
 CORE_FIELDS = {
     "name",
@@ -456,13 +458,6 @@ def validate(skill_dir: Path, profile: str = "house") -> tuple[list[str], list[s
         header_error = validate_python_header(py_file, skill_dir)
         if header_error:
             errors.append(header_error)
-
-    if not (skill_dir / "LEARNINGS.md").is_file():
-        warnings.append("no LEARNINGS.md — the skill has no house learnings loop")
-    if "learnings.md" not in body.lower():
-        warnings.append(
-            "body never mentions LEARNINGS.md — agents will not read or update it"
-        )
 
     warnings.extend(validate_references(skill_dir))
 

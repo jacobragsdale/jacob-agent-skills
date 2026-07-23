@@ -5,9 +5,8 @@
 # ///
 """Scaffold a new agent skill folder.
 
-Creates <dir>/<name>/ with a SKILL.md template (valid frontmatter, house-rule
-section placeholders, learnings-loop block), a seeded LEARNINGS.md, and optional
-Codex metadata.
+Creates <dir>/<name>/ with a SKILL.md template (valid frontmatter and house-rule
+section placeholders) and optional Codex metadata.
 """
 
 import argparse
@@ -28,9 +27,6 @@ description: {description}
 
 <!-- TODO: One sentence stating the capability and its important boundary. -->
 
-If `LEARNINGS.md` next to this SKILL.md has entries, read them first — they
-override the instructions below.
-
 ## Workflow
 
 <!-- TODO: Imperative steps. Put deterministic work in scripts, stable detail
@@ -50,24 +46,6 @@ override the instructions below.
 <!-- TODO: Delete this comment and list only resources that exist.
      - `scripts/<x>.py` — run to ...
      - `references/<x>.md` — read when ... -->
-
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.
-"""
-
-LEARNINGS_TEMPLATE = """\
-# Learnings
-
-Dated corrections from real use of this skill. Read before executing;
-fold recurring/confirmed entries into SKILL.md and delete them here.
-
-Format: `- YYYY-MM-DD: <what happened> → <what to do instead>`
-
-(no entries yet)
 """
 
 DEFAULT_DESCRIPTION = (
@@ -76,6 +54,7 @@ DEFAULT_DESCRIPTION = (
     "the user ...' with concrete phrases, an 'even if ...' clause, and an "
     "anti-trigger if the domain is high-frequency. Keep under 250 chars."
 )
+
 
 def codex_sidecar(title: str, explicit_only: bool) -> str:
     lines = ["interface:", f"  display_name: {title}"]
@@ -146,7 +125,6 @@ def main() -> int:
         ),
         encoding="utf-8",
     )
-    (skill_dir / "LEARNINGS.md").write_text(LEARNINGS_TEMPLATE, encoding="utf-8")
     if args.codex:
         agents_dir = skill_dir / "agents"
         agents_dir.mkdir()
@@ -156,7 +134,6 @@ def main() -> int:
 
     print(f"created {skill_dir}/")
     print("  SKILL.md      — fill in the TODO sections, keep the body under 300 lines")
-    print("  LEARNINGS.md  — seeded empty")
     if args.strict_core:
         invocation = "client default (strict core has no portable invocation field)"
     elif args.explicit_only:

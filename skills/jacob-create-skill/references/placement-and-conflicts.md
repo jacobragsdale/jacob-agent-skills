@@ -48,8 +48,8 @@ burn reasoning trying to reconcile conflicts rather than picking one, so a
 loaded skill that quietly disagrees with other context produces hesitation,
 permission-asking, or the default behavior instead of the skill's.
 
-- **Purge duplicates.** The same rule stated in two loaded places (skill +
-  rule, skill + LEARNINGS entry) will eventually drift into contradiction.
+- **Purge duplicates.** The same rule stated in two loaded places will
+  eventually drift into contradiction.
   State each rule once, in the layer that loads most reliably, and have the
   other layer point to it.
 - **State precedence when overriding a default.** Client harnesses ship their

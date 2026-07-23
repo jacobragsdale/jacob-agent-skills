@@ -7,14 +7,13 @@ this machine; agent skill directories only ever hold symlinks into it.
 
 ## Skills
 
-- `python-standards` — the house standard for Python repos: uv, one
-  pyproject.toml, ruff, basedpyright, pytest + coverage ratchet, pre-commit,
-  .env convention.
+- `python-standards` — high-integrity production Python: strict typing,
+  validated I/O, uv, ruff, basedpyright, pre-commit, and explicit config.
 - `git-ops` — the solo git workflow: main only, frequent commits, push after
   every commit, clean tree at end of task.
 - `jacob-home-server` — operating the home server.
 - `jacob-create-skill` — meta-skill: creates and improves the other skills
-  (scaffolder, validator, trigger testing, learnings loop).
+  (scaffolder, validator, trigger testing, and forward testing).
 
 Skills are model-invocable by default — the description is the trigger. Add
 `disable-model-invocation: true` only for skills that must never fire on
@@ -26,7 +25,6 @@ their own.
 skills/                    # canonical source of truth — one folder per skill
   <name>/
     SKILL.md               # instructions (loaded when the skill triggers)
-    LEARNINGS.md           # dated corrections from real use (self-improvement)
     scripts/               # self-contained uv/PEP 723 scripts (optional)
     references/            # docs loaded on demand (optional)
 rules/                     # always-on rules, referenced from repo AGENTS.md files
@@ -71,8 +69,6 @@ uv run skills/jacob-create-skill/scripts/validate_skill.py skills/my-skill
   Cursor shows the model) names the capability and top keywords, followed by
   "Use when …", an "even if …" clause, and an anti-trigger for
   high-frequency domains. Whole description under 250 chars when possible.
-- Every skill has a `LEARNINGS.md`: agents append dated corrections after
-  use; recurring lessons get folded into SKILL.md deliberately.
 - Bundled Python (if any) is single-file with PEP 723 inline deps, run via
   `uv run`.
 - Few skills, kept sharp — fold related material into an existing skill

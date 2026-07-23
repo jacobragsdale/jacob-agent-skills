@@ -5,9 +5,6 @@ description: "Write high-integrity production Python with strict types and valid
 
 # Python house standard
 
-If `LEARNINGS.md` next to this SKILL.md has entries, read them first — they
-override the instructions below.
-
 Apply these rules to all first-party Python. Optimize for explicit guarantees,
 then choose the simplest implementation that preserves them.
 
@@ -112,10 +109,3 @@ uv run pre-commit run --all-files
 After dependency or environment changes, also delete only the repo-local
 `.venv`, run `uv sync --locked`, and verify the program's imports or entry
 point from that fresh environment.
-
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.

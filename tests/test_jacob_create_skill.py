@@ -31,13 +31,6 @@ def load_module(name: str, path: Path):
 init_skill = load_module("jacob_init_skill", SCRIPT_DIR / "init_skill.py")
 validate_skill = load_module("jacob_validate_skill", SCRIPT_DIR / "validate_skill.py")
 
-LEARNINGS = """# Learnings
-
-Format: `- YYYY-MM-DD: <what happened> → <what to do instead>`
-
-(no entries yet)
-"""
-
 
 class SkillToolTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -52,7 +45,7 @@ class SkillToolTests(unittest.TestCase):
         name: str = "test-skill",
         *,
         extra_frontmatter: str = "",
-        body: str = "Follow the requested workflow.\n\nRead LEARNINGS.md before executing.\n",
+        body: str = "Follow the requested workflow.\n",
         description: str = (
             "Create a verified test artifact. Use when the user asks to exercise "
             "the skill tooling or validate a generated skill."
@@ -65,7 +58,6 @@ class SkillToolTests(unittest.TestCase):
             f"{extra_frontmatter}---\n\n{body}",
             encoding="utf-8",
         )
-        (skill_dir / "LEARNINGS.md").write_text(LEARNINGS, encoding="utf-8")
         return skill_dir
 
     def run_init(self, *args: str) -> int:
@@ -81,6 +73,7 @@ class SkillToolTests(unittest.TestCase):
         self.assertNotIn(
             "disable-model-invocation", (skill_dir / "SKILL.md").read_text()
         )
+        self.assertEqual({path.name for path in skill_dir.iterdir()}, {"SKILL.md"})
 
     def test_explicit_only_scaffold_disables_model_invocation(self) -> None:
         self.assertEqual(
@@ -112,9 +105,7 @@ class SkillToolTests(unittest.TestCase):
         )
 
     def test_codex_without_explicit_only_writes_sidecar_without_policy(self) -> None:
-        self.assertEqual(
-            self.run_init("open", "--dir", str(self.root), "--codex"), 0
-        )
+        self.assertEqual(self.run_init("open", "--dir", str(self.root), "--codex"), 0)
         sidecar = (self.root / "open" / "agents" / "openai.yaml").read_text(
             encoding="utf-8"
         )
@@ -132,8 +123,6 @@ class SkillToolTests(unittest.TestCase):
 ```markdown
 Read `references/not-real.md` in an example skill.
 ```
-
-Read LEARNINGS.md before executing.
 """
         errors, warnings = validate_skill.validate(self.write_skill(body=body))
         self.assertEqual(errors, [])
@@ -143,7 +132,7 @@ Read LEARNINGS.md before executing.
         body = (
             "Run `./scripts/local-wrapper.sh` from the repo root, check "
             "`host/scripts/status.sh` on the server, and refresh "
-            "`~/home-server/scripts/deploy.sh`.\n\nRead LEARNINGS.md first.\n"
+            "`~/home-server/scripts/deploy.sh`.\n"
         )
         _, warnings = validate_skill.validate(self.write_skill(body=body))
         self.assertFalse(
@@ -151,9 +140,7 @@ Read LEARNINGS.md before executing.
         )
 
     def test_real_missing_reference_warns(self) -> None:
-        body = (
-            "Read references/missing.md before running.\n\nRead LEARNINGS.md first.\n"
-        )
+        body = "Read references/missing.md before running.\n"
         _, warnings = validate_skill.validate(self.write_skill(body=body))
         self.assertTrue(any("references/missing.md" in warning for warning in warnings))
 
@@ -242,9 +229,7 @@ Read LEARNINGS.md before executing.
         skill_dir = self.write_skill()
         references = skill_dir / "references"
         references.mkdir()
-        (references / "big.md").write_text(
-            "# Big\n" + "line\n" * 120, encoding="utf-8"
-        )
+        (references / "big.md").write_text("# Big\n" + "line\n" * 120, encoding="utf-8")
         _, warnings = validate_skill.validate(skill_dir)
         self.assertTrue(any("table of contents" in warning for warning in warnings))
 
@@ -266,7 +251,9 @@ Read LEARNINGS.md before executing.
         )
         (references / "b.md").write_text("# B\n\ndetail\n", encoding="utf-8")
         _, warnings = validate_skill.validate(skill_dir)
-        self.assertTrue(any("reference-to-reference" in warning for warning in warnings))
+        self.assertTrue(
+            any("reference-to-reference" in warning for warning in warnings)
+        )
 
 
 if __name__ == "__main__":

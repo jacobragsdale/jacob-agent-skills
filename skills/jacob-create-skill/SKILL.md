@@ -1,6 +1,6 @@
 ---
 name: jacob-create-skill
-description: Create, improve, or validate agent skills (SKILL.md folders). Use whenever the user wants to make a new skill, fix one that isn't triggering, review, refactor, or scaffold a skill, add scripts to one, or fold LEARNINGS.md notes in — even if they don't say "skill" but want a reusable agent workflow, checklist, or SOP packaged for reuse.
+description: Create, improve, or validate agent skills (SKILL.md folders). Use whenever the user wants a new skill, trigger fix, review, refactor, scaffold, or bundled script — even if they don't say "skill" but want a reusable agent workflow, checklist, or SOP.
 metadata:
   author: jacob
 ---
@@ -12,9 +12,6 @@ extensions for Cursor, Claude Code, and optionally Codex. Do not call a skill
 strictly spec-conformant when its frontmatter contains vendor extensions. A skill
 is a folder whose name matches the `name:` in `SKILL.md`, optionally with
 `scripts/`, `references/`, `assets/`, and product metadata alongside.
-
-**Before doing anything else, read `LEARNINGS.md` next to this SKILL.md.**
-Entries there are corrections from real use and override anything below.
 
 ## Step 1 — Confirm an evidence-backed intent brief
 
@@ -54,8 +51,8 @@ user the completed brief for confirmation before scaffolding:
 
 ## Step 2 — Scaffold
 
-Run the scaffolder rather than hand-creating files, so the folder name, the
-frontmatter, and the learnings loop start correct:
+Run the scaffolder rather than hand-creating files, so the folder name,
+frontmatter, and section structure start correct:
 
 ```bash
 uv run <this-skill-dir>/scripts/init_skill.py <skill-name> --dir <skills-root>
@@ -215,45 +212,18 @@ auto-triggered, high-stakes, side-effecting, or broadly distributed skills,
 repeat runs, record time/tokens when available, and check coexistence with the
 other skills likely to be installed.
 
-## Step 7 — Wire the learnings loop
-
-Every skill you create ships with a `LEARNINGS.md` (the scaffolder seeds it)
-and wires the loop at both ends of the body. Near the top — instructions late
-in a body are the least reliably followed — the first section opens with this
-exact line:
-
-```markdown
-If `LEARNINGS.md` next to this SKILL.md has entries, read them first — they
-override the instructions below.
-```
-
-("next to this SKILL.md", never "in this skill's folder": the agent's working
-directory is usually another repo, and not every client tells the model where
-the skill lives.) The body then ends with this exact block:
-
-```markdown
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.
-```
-
 ## Improving an existing skill
 
-When asked to improve a skill (or to "fold learnings"):
+When asked to improve a skill:
 
-1. Read its `SKILL.md` and `LEARNINGS.md`.
+1. Read its `SKILL.md` and inspect the evidence behind the requested change.
 2. Snapshot the current skill outside its folder for the Step 6 baseline.
 3. Preserve the existing directory name, `name`, invocation policy, and other
    frontmatter unless the user explicitly asked to change them. Edit in place.
-4. Fold entries that recur or were explicitly user-confirmed into the body,
-   in the section where the mistake happened. Delete each folded entry.
-5. Delete stale or speculative entries — a lesson that never recurred and
-   can't be tied to a real failure is noise.
-6. Cut body lines that aren't pulling weight; skills accrete.
-7. Re-run Steps 4–6 before finishing.
+4. Apply confirmed corrections in the section where the behavior occurs;
+   remove stale or speculative instructions that lack evidence.
+5. Cut body lines that aren't pulling weight; skills accrete.
+6. Re-run Steps 4–6 before finishing.
 
 ## Bundled resources
 
@@ -270,10 +240,3 @@ When asked to improve a skill (or to "fold learnings"):
 - `references/placement-and-conflicts.md` — **read** when a capability must
   hold in every session, when a skill overlaps a rule or another skill, or
   when it contradicts a client default (rules-vs-skills, precedence).
-
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.

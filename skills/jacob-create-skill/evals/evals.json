@@ -9,8 +9,8 @@
     },
     {
       "id": 2,
-      "prompt": "Improve my existing review skill and fold its confirmed LEARNINGS.md corrections into the instructions. Keep how I invoke it unchanged.",
-      "expected_output": "The agent snapshots the old skill, preserves its name and invocation frontmatter, folds confirmed lessons in place, applies the default-behavior test rule by rule to prune stale or redundant prose, validates it, runs the six-message dual-window trigger check (first sentence, then first 250 characters), and compares realistic task outputs with the old version.",
+      "prompt": "Improve my existing review skill using these confirmed corrections. Keep how I invoke it unchanged.",
+      "expected_output": "The agent snapshots the old skill, preserves its name and invocation frontmatter, applies confirmed corrections in place, uses the default-behavior test rule by rule to prune stale or redundant prose, validates it, runs the six-message dual-window trigger check (first sentence, then first 250 characters), and compares realistic task outputs with the old version.",
       "files": []
     },
     {

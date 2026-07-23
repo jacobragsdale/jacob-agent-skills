@@ -5,9 +5,6 @@ description: "Commit, push, and end-of-task git workflow for Jacob's solo repos 
 
 # Git operations
 
-If `LEARNINGS.md` next to this SKILL.md has entries, read them first — they
-override the instructions below.
-
 All of Jacob's repos are personal, single-developer projects. There is no
 review gate, no team to coordinate with, and no reason for branches to exist.
 The goal state after every task: on `main`, working tree clean, everything
@@ -65,10 +62,3 @@ git status   # clean — task can end
 ```
 
 Not: one `git commit -am "updates"` at the end, unpushed.
-
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.

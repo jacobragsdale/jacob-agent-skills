@@ -22,7 +22,7 @@ service facts in the home-server repo rather than copying them here.
 2. Inspect `host/scripts/status.sh --summary`, `docker ps`, the affected
    container's last 100–200 log lines, health status, and the exact endpoint.
 3. Follow dependencies outward only as evidence requires: app → shared Docker
-   network/VPN → Caddy → LAN/router/DNS → Tailscale or public provider.
+   network/VPN → Caddy → LAN/router/DNS → Tailscale.
 4. Check `host/logs/{healthcheck,maintenance,backup}.log` and the corresponding
    systemd unit when the issue may be scheduled or host-wide.
 5. Explain the cause before proposing a change. Do not restart first and erase
@@ -42,9 +42,9 @@ service facts in the home-server repo rather than copying them here.
   deploy only that stack when no host/shared change requires more, then verify
   container state, logs, and the endpoint through the same path its client
   uses.
-- For Caddy changes, read `docs/public-ingress.md` and the complete Caddyfile.
-  `scripts/deploy.sh caddy` performs the reload and CrowdSec sync; still verify
-  the affected route and run
+- For Caddy changes, read `docs/ingress.md` and the complete Caddyfile.
+  `scripts/deploy.sh caddy` performs the reload; still verify the affected
+  route and run
   `ssh 100.103.224.99 'docker exec -w /etc/caddy caddy caddy validate'`.
 
 ## Add a stack or service
@@ -60,10 +60,9 @@ service facts in the home-server repo rather than copying them here.
    to `host/data-layout.tsv` with deliberate owner, group, mode, and
    `backup=yes|no`; explain the consequence in `docs/state-and-backups.md`.
    Add an application-consistent export when backing up live files is unsafe.
-4. Default UI ports to the Tailscale IP. For internal HTTPS or public ingress,
-   update every layer documented in `docs/public-ingress.md` and the router/DNS
-   declarations. Add authentication and a CrowdSec login scenario when the
-   exposure model requires them.
+4. Default UI ports to the Tailscale IP. For internal HTTPS or LAN ingress,
+   update every layer documented in `docs/ingress.md` and the router/DNS
+   declarations. Public ingress is not part of the current architecture.
 5. Update `docs/services.md` and `docs/credentials.md` when applicable. The
    healthcheck derives container presence from `container_name:`; add an HTTP or
    TCP probe only when it provides a stable, meaningful signal.
@@ -123,8 +122,16 @@ service facts in the home-server repo rather than copying them here.
   docs if it is not already reproducible.
 - For router or Tailscale work, read `host/router-openwrt.sh`,
   `host/router-adguardhome.yaml`, `docs/tailscale.md`, and
-  `docs/public-ingress.md` as applicable. Identify admin-console steps that a
+  `docs/ingress.md` as applicable. Identify admin-console steps that a
   repo deploy cannot perform.
+- The router's hijack-DNS DNAT intercepts direct port 53, including
+  `dig @1.1.1.1`. Test a public resolver with DoH to its literal IP instead:
+  `curl -H 'accept: application/dns-json' 'https://1.1.1.1/dns-query?name=<host>'`.
+- The Cloudflare `ragsdale.dev` zone carries ProtonMail MX, DKIM, SPF, and DMARC
+  records. Never bulk-delete the zone when changing web or ingress records.
+- Live OpenWrt firewall redirects may be anonymous `@redirect[N]` sections
+  even though `router-openwrt.sh` now writes named sections. Match the `name`
+  option and delete anonymous indices from highest to lowest.
 - Projects listed as “own repo” in `docs/services.md` are changed and deployed
   from their own Mac repository. Do not migrate their compose files into this
   repo merely to operate them.

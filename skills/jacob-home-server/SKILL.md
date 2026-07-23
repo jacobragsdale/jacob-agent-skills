@@ -12,9 +12,8 @@ GitHub; a verified commit and push are the configuration backup.
 
 ## Start every task
 
-1. Read `LEARNINGS.md` next to this SKILL.md — its entries override this
-   file. Then work from the Mac repository. Check the worktree with
-   `git status --short` before editing and preserve unrelated changes.
+1. Work from the Mac repository. Check the worktree with `git status --short`
+   before editing and preserve unrelated changes.
 2. Read `README.md`, `docs/services.md`, and the files that own the requested
    behavior. Read `docs/state-and-backups.md` for persistence or recovery
    changes. Do not trust a service list copied into this skill: this repo
@@ -52,8 +51,9 @@ VM operation.
 - Never delete a volume, bind-mount directory, backup snapshot, media, VM disk,
   or drift-reported data without Jacob's explicit approval for that deletion.
   Removing configuration does not imply deleting its data.
-- Bind new admin UIs to `100.103.224.99` by default. LAN or public exposure is
-  a deliberate design choice that requires the matching network and auth work.
+- Bind new admin UIs to `100.103.224.99` by default. LAN exposure is a
+  deliberate design choice. Public ingress is retired; reintroduce it only on
+  explicit request with the matching network, DNS, and authentication work.
 - Use `REHEARSAL=1` for every practice rebuild command. Without it, a rehearsal
   can join production systems, repoint DNS, arm notification timers, and prune
   the real backup repository.
@@ -92,10 +92,3 @@ Report the observed cause or requested outcome, files changed, live actions,
 verification evidence, and any manual/cloud steps still required. Never print
 secret values. If no live action was authorized, say explicitly that the repo
 or server was not changed.
-
-## Improving this skill
-
-After use, if the user corrected you or the outcome surprised you, append one
-dated line to `LEARNINGS.md` next to this SKILL.md:
-`- YYYY-MM-DD: <what happened> → <what to do instead>`. Do not edit SKILL.md
-directly; lessons are folded in deliberately, not on the fly.
