@@ -42,7 +42,7 @@ select = [
     "PERF",
     "ASYNC",
     "FAST",
-    "PD002", "PD007", "PD011", "PD101",
+    "PD",
 ]
 ignore = [
     # Highly opinionated structured-concurrency API rule. Timeout parameters

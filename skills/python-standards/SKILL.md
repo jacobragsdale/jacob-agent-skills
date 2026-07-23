@@ -10,16 +10,15 @@ then choose the simplest implementation that preserves them.
 
 ## Types and state
 
-- Annotate every function. Rely on inference only for locals whose resulting
-  type remains precise.
+- Rely on inference only for locals whose resulting type remains precise.
 - Run basedpyright in `recommended` mode over all owned code and require zero
   diagnostics. Do not downgrade the mode for brownfield code; use a checked-in
   baseline only when the user explicitly chooses staged adoption.
 - Do not let `Any` or `Unknown` escape an untyped dependency adapter. Add a
   stub, `Protocol`, or narrow validated wrapper instead.
 - Keep type-checker fixes in the type domain. Do not add runtime branches or
-  assertions solely to appease the checker. Use a narrow
-  `# pyright: ignore[specificRule]` only with a reason.
+  assertions solely to appease the checker. Give every necessary suppression
+  an adjacent reason.
 - Use `None` only when absence is a valid domain state. Do not use nullable
   fields for partial construction, missing required input, or error signaling;
   use complete objects or tagged state types instead.
@@ -85,11 +84,8 @@ model_config = ConfigDict(
 - Profile before changing representations or adding concurrency. Optimize the
   measured bottleneck and include warm-up, realistic batch sizes, and production
   I/O behavior in the benchmark.
-- Never block an event loop with synchronous HTTP, file, subprocess, sleep, or
-  input calls. Use an async implementation or explicitly offload blocking work.
-- In pandas paths, make mutation and array conversion explicit. Avoid
-  `inplace=True` and ambiguous `.values`; for latency-sensitive operations,
-  compare pandas, NumPy, and specialized representations with realistic data.
+- For latency-sensitive dataframe work, compare pandas, NumPy, and specialized
+  representations with realistic data and include conversion and copy costs.
 
 ## Environment and tools
 
@@ -105,10 +101,10 @@ model_config = ConfigDict(
   `assets/pre-commit-config.yaml`; do not retype them. Then run
   `uv add --dev ruff basedpyright pre-commit`,
   `uv run pre-commit autoupdate`, and `uv run pre-commit install`.
-- Keep the asset's `PERF`, `ASYNC`, `FAST`, and curated pandas-vet rules enabled
-  in every repo. They remain inactive when the matching constructs are absent;
-  do not generate dependency-specific Ruff configurations. `ASYNC109` stays
-  ignored because timeout parameters can be deliberate API design.
+- Keep the asset's `PERF`, `ASYNC`, `FAST`, and full stable pandas-vet rules
+  enabled in every repo. They remain inactive when the matching constructs are
+  absent; do not generate dependency-specific Ruff configurations. `ASYNC109`
+  stays ignored because timeout parameters can be deliberate API design.
 - When pre-commit is already configured for a repo, resolve the active hook
   path with `git rev-parse --git-path hooks/pre-commit`. If that file is
   absent, run `uv run pre-commit install`; configuration alone does not
