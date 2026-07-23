@@ -10,16 +10,16 @@ unsafe-fixes = false
 
 [tool.ruff.lint]
 select = [
-    "E4",  # pycodestyle: keep imports valid and at the top level.
-    "E7",  # pycodestyle: reject ambiguous statements and comparisons.
-    "E9",  # pycodestyle: report fatal file-read errors.
-    "F",  # Pyflakes: catch undefined names, unused imports, and dead assignments.
-    "I",  # isort: keep imports ordered and grouped consistently.
-    "UP",  # pyupgrade: use syntax appropriate for the target Python version.
-    "B",  # flake8-bugbear: catch likely bugs and hazardous design patterns.
-    "SIM",  # flake8-simplify: replace needlessly complex control flow.
-    "C4",  # flake8-comprehensions: remove wasteful collection constructions.
-    "RUF",  # Ruff: apply Ruff-native correctness and modernization checks.
+    "E4",  # Keep imports valid and at the top level.
+    "E7",  # Reject ambiguous statements and comparisons.
+    "E9",  # Report fatal file-read errors.
+    "F",  # Catch undefined names, unused imports, and dead assignments.
+    "I",  # Keep imports ordered and grouped consistently.
+    "UP",  # Use syntax appropriate for the target Python version.
+    "B",  # Catch likely bugs and hazardous design patterns.
+    "SIM",  # Replace needlessly complex control flow.
+    "C4",  # Remove wasteful collection constructions.
+    "RUF",  # Apply additional correctness and modernization checks.
     "ANN001",  # Require annotations for named function arguments.
     "ANN002",  # Require annotations for *args.
     "ANN003",  # Require annotations for **kwargs.
@@ -28,26 +28,26 @@ select = [
     "ANN204",  # Require return annotations on special methods.
     "ANN205",  # Require return annotations on static methods.
     "ANN206",  # Require return annotations on class methods.
-    "BLE",  # flake8-blind-except: reject overly broad exception handlers.
-    "DTZ",  # flake8-datetimez: prevent naive datetime construction.
-    "LOG",  # flake8-logging: enforce safe logger and exception usage.
-    "G",  # flake8-logging-format: require lazy, valid log formatting.
-    "ARG",  # flake8-unused-arguments: expose unused parameters.
-    "PIE",  # flake8-pie: catch miscellaneous unnecessary or error-prone code.
-    "PGH",  # pygrep-hooks: reject blanket ignores and common unsafe shortcuts.
-    "RSE",  # flake8-raise: remove unnecessary syntax when raising exceptions.
+    "BLE",  # Reject overly broad exception handlers.
+    "DTZ",  # Prevent naive datetime construction.
+    "LOG",  # Enforce safe logger and exception usage.
+    "G",  # Require lazy, valid log formatting.
+    "ARG",  # Expose unused parameters.
+    "PIE",  # Catch miscellaneous unnecessary or error-prone code.
+    "PGH",  # Reject blanket ignores and common unsafe shortcuts.
+    "RSE",  # Remove unnecessary syntax when raising exceptions.
     "RET502",  # Reject implicit None returns in functions that return values.
     "RET503",  # Require an explicit final return in value-returning functions.
     "TRY004",  # Raise TypeError for invalid argument types.
     "TRY201",  # Use a bare raise when re-raising the current exception.
     "TRY203",  # Remove handlers that only re-raise immediately.
     "TRY401",  # Do not repeat the exception in logging.exception messages.
-    "PLW",  # Pylint warnings: catch suspicious control flow and API usage.
-    "C90",  # McCabe: limit cyclomatic complexity.
-    "PERF",  # Perflint: flag avoidable allocations and slow loop patterns.
-    "ASYNC",  # flake8-async: catch blocking calls and async misuse.
-    "FAST",  # FastAPI: validate route declarations and dependency annotations.
-    "PD",  # pandas-vet: enforce safer and more efficient pandas idioms.
+    "PLW",  # Catch suspicious control flow and API usage.
+    "C90",  # Limit cyclomatic complexity.
+    "PERF",  # Flag avoidable allocations and slow loop patterns.
+    "ASYNC",  # Catch blocking calls and async misuse.
+    "FAST",  # Validate route declarations and dependency annotations.
+    "PD",  # Enforce safer and more efficient dataframe idioms.
 ]
 ignore = [
     "ASYNC109",  # Allow deliberate timeout parameters in async APIs.
