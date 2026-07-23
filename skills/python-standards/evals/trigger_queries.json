@@ -1,26 +1,26 @@
 [
   {
-    "query": "Write tests for the order-matching module and make sure they run in pre-commit.",
+    "query": "Refactor this Python market-data adapter so malformed vendor messages cannot reach the pricing engine.",
     "should_trigger": true
   },
   {
-    "query": "Set up a fresh Python project here with linting, type checking, and a test suite.",
+    "query": "Set up this Python repo with uv, Ruff, basedpyright, and pre-commit.",
     "should_trigger": true
   },
   {
-    "query": "This repo has requirements.txt, setup.py, and a venv script — standardize it to our usual tooling.",
+    "query": "Review this risk-calculation module for unsafe Optional values and implicit float assumptions.",
     "should_trigger": true
   },
   {
-    "query": "Debug this Python traceback from last night's ETL run.",
+    "query": "Write pytest tests for the Python order-matching module.",
     "should_trigger": false
   },
   {
-    "query": "Write a Python script that parses this CSV and uploads the rows to Postgres.",
+    "query": "Compare uv and pip for a short internal blog post.",
     "should_trigger": false
   },
   {
-    "query": "Explain how pytest fixtures differ from setUp/tearDown.",
+    "query": "Explain what Pydantic strict mode means without changing any code.",
     "should_trigger": false
   }
 ]

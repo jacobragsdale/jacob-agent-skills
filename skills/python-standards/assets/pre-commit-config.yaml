@@ -30,9 +30,3 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-      - id: pytest
-        name: pytest (unit, with coverage ratchet)
-        entry: uv run pytest -m "not integration" --cov -q
-        language: system
-        pass_filenames: false
-        types: [python]
